@@ -19,6 +19,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
     public interface OnFlashcardClickListener {
         void onEditClick(int position);
         void onDeleteClick(int position);
+        void onFlashcardClick(int position); // New method for viewing
     }
 
     public FlashcardAdapter(List<Flashcard> flashcardList, OnFlashcardClickListener listener) {
@@ -37,6 +38,11 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
     public void onBindViewHolder(@NonNull FlashcardViewHolder holder, int position) {
         Flashcard flashcard = flashcardList.get(position);
         holder.question.setText(flashcard.getQuestion());
+
+        // Handle clicks for viewing, editing, and deleting flashcards
+        holder.itemView.setOnClickListener(v -> listener.onFlashcardClick(position));
+        holder.editButton.setOnClickListener(v -> listener.onEditClick(position));
+        holder.deleteButton.setOnClickListener(v -> listener.onDeleteClick(position));
     }
 
     @Override
@@ -53,9 +59,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             question = itemView.findViewById(R.id.question);
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
-
-            editButton.setOnClickListener(v -> listener.onEditClick(getAdapterPosition()));
-            deleteButton.setOnClickListener(v -> listener.onDeleteClick(getAdapterPosition()));
         }
     }
 }

@@ -39,7 +39,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             Intent intent = new Intent(HomeScreen.this, FlashcardEditActivity.class);
             startActivityForResult(intent, ADD_FLASHCARD_REQUEST);
         });
-
     }
 
     @Override
@@ -50,6 +49,15 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
         intent.putExtra("answer", flashcard.getAnswer());
         intent.putExtra("position", position);
         startActivityForResult(intent, EDIT_FLASHCARD_REQUEST);
+    }
+
+    @Override
+    public void onFlashcardClick(int position) {
+        Flashcard flashcard = flashcardList.get(position);
+        Intent intent = new Intent(HomeScreen.this, Flashcard_View_Screen.class);
+        intent.putExtra("question", flashcard.getQuestion());
+        intent.putExtra("answer", flashcard.getAnswer());
+        startActivity(intent);
     }
 
     @Override
@@ -76,7 +84,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             }
         }
     }
-
 
     @Override
     public void onDeleteClick(int position) {
