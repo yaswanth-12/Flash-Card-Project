@@ -39,9 +39,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             startActivityForResult(intent, ADD_FLASHCARD_REQUEST);
         });
 
-        // Add some sample flashcards
-        flashcardList.add(new Flashcard("1", "Question 1", "Answer 1"));
-        flashcardList.add(new Flashcard("2", "Question 2", "Answer 2"));
         adapter.notifyDataSetChanged();
     }
 
