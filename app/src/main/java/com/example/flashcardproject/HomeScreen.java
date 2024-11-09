@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
 
     private List<Flashcard> flashcardList;
     private FlashcardAdapter adapter;
-    private FirebaseFirestore db;
     public static final int ADD_FLASHCARD_REQUEST = 1;
     public static final int EDIT_FLASHCARD_REQUEST = 2;
 
@@ -30,7 +27,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
         setContentView(R.layout.activity_home_screen);
 
         flashcardList = new ArrayList<>();
-        db = FirebaseFirestore.getInstance();
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -43,24 +39,10 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             startActivityForResult(intent, ADD_FLASHCARD_REQUEST);
         });
 
-        fetchFlashcardsFromFirestore();
-    }
-
-    private void fetchFlashcardsFromFirestore() {
-        db.collection("flashcards")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        flashcardList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Flashcard flashcard = document.toObject(Flashcard.class);
-                            flashcardList.add(flashcard);
-                        }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        // Handle error
-                    }
-                });
+        // Add some sample flashcards
+        flashcardList.add(new Flashcard("1", "Question 1", "Answer 1"));
+        flashcardList.add(new Flashcard("2", "Question 2", "Answer 2"));
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -112,6 +94,7 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
 
     @Override
     public void onDeleteClick(int position) {
-        Flashcard flashcard = flashcardList.get(position);
+        flashcardList.remove(position);
+        adapter.notifyItemRemoved(position);
     }
 }
