@@ -113,14 +113,5 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
     @Override
     public void onDeleteClick(int position) {
         Flashcard flashcard = flashcardList.get(position);
-        db.collection("flashcards").document(flashcard.getId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    flashcardList.remove(position);
-                    adapter.notifyItemRemoved(position);
-                })
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
     }
 }

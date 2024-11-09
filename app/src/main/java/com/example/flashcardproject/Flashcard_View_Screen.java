@@ -73,27 +73,11 @@ public class Flashcard_View_Screen extends AppCompatActivity {
     }
 
     private void shuffleFlashcards() {
-        db.collection("flashcards")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        flashcardList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Flashcard flashcard = document.toObject(Flashcard.class);
-                            flashcardList.add(flashcard);
-                        }
-                        if (!flashcardList.isEmpty()) {
-                            Random random = new Random();
-                            int randomIndex = random.nextInt(flashcardList.size());
-                            Flashcard randomFlashcard = flashcardList.get(randomIndex);
-                            flashcardList.clear();
-                            flashcardList.add(randomFlashcard);
-                            isShowingQuestion = true;
-                            displayFlashcard();
-                        }
-                    } else {
-                        // Handle error
-                    }
-                });
+        Random random = new Random();
+        int index = random.nextInt(flashcardList.size());
+        Flashcard flashcard = flashcardList.get(index);
+        flashcardList.remove(index);
+        flashcardList.add(0, flashcard);
+        displayFlashcard();
     }
 }
