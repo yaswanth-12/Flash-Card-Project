@@ -6,6 +6,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,7 @@ public class Flashcard_View_Screen extends AppCompatActivity {
     private boolean isShowingQuestion = true;
     private TextView flashcardContent;
     private Button KnownButton;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +29,16 @@ public class Flashcard_View_Screen extends AppCompatActivity {
         flashcardContent = findViewById(R.id.flashcardContent);
         KnownButton = findViewById(R.id.button);
         Button shuffleButton = findViewById(R.id.shuffleButton);
+        db = FirebaseFirestore.getInstance();
 
-        // Get question and answer from intent
+        // Get id, question, and answer from intent
+        String id = getIntent().getStringExtra("id");
         String question = getIntent().getStringExtra("question");
         String answer = getIntent().getStringExtra("answer");
 
         // Create a flashcard list with only the selected flashcard
         flashcardList = new ArrayList<>();
-        flashcardList.add(new Flashcard(question, answer));
+        flashcardList.add(new Flashcard(id, question, answer, false));
         displayFlashcard();
 
         flashcardContent.setOnClickListener(v -> flipFlashcard());
@@ -56,15 +61,23 @@ public class Flashcard_View_Screen extends AppCompatActivity {
         }).start();
     }
 
-
     private void markAsKnown() {
-        flashcardList.remove(currentIndex);
-        if (flashcardList.isEmpty()) {
-            finish();
-        } else {
-            currentIndex = currentIndex % flashcardList.size();
-            displayFlashcard();
-        }
+        Flashcard flashcard = flashcardList.get(currentIndex);
+        flashcard.setKnown(true);
+        db.collection("flashcards").document(flashcard.getId())
+                .update("known", true)
+                .addOnSuccessListener(aVoid -> {
+                    flashcardList.remove(currentIndex);
+                    if (flashcardList.isEmpty()) {
+                        finish();
+                    } else {
+                        currentIndex = currentIndex % flashcardList.size();
+                        displayFlashcard();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle error
+                });
     }
 
     private void shuffleFlashcards() {

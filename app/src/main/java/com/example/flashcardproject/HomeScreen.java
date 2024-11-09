@@ -1,16 +1,17 @@
+// HomeScreen.java
 package com.example.flashcardproject;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.jetbrains.annotations.Nullable;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
 
     private List<Flashcard> flashcardList;
     private FlashcardAdapter adapter;
+    private FirebaseFirestore db;
     public static final int ADD_FLASHCARD_REQUEST = 1;
     public static final int EDIT_FLASHCARD_REQUEST = 2;
 
@@ -28,6 +30,7 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
         setContentView(R.layout.activity_home_screen);
 
         flashcardList = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -39,12 +42,32 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             Intent intent = new Intent(HomeScreen.this, FlashcardEditActivity.class);
             startActivityForResult(intent, ADD_FLASHCARD_REQUEST);
         });
+
+        fetchFlashcardsFromFirestore();
+    }
+
+    private void fetchFlashcardsFromFirestore() {
+        db.collection("flashcards")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        flashcardList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Flashcard flashcard = document.toObject(Flashcard.class);
+                            flashcardList.add(flashcard);
+                        }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        // Handle error
+                    }
+                });
     }
 
     @Override
     public void onEditClick(int position) {
         Flashcard flashcard = flashcardList.get(position);
         Intent intent = new Intent(HomeScreen.this, FlashcardEditActivity.class);
+        intent.putExtra("id", flashcard.getId());
         intent.putExtra("question", flashcard.getQuestion());
         intent.putExtra("answer", flashcard.getAnswer());
         intent.putExtra("position", position);
@@ -55,6 +78,7 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
     public void onFlashcardClick(int position) {
         Flashcard flashcard = flashcardList.get(position);
         Intent intent = new Intent(HomeScreen.this, Flashcard_View_Screen.class);
+        intent.putExtra("id", flashcard.getId());
         intent.putExtra("question", flashcard.getQuestion());
         intent.putExtra("answer", flashcard.getAnswer());
         startActivity(intent);
@@ -69,7 +93,8 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
             String answer = data.getStringExtra("answer");
 
             if (requestCode == ADD_FLASHCARD_REQUEST) {
-                Flashcard newFlashcard = new Flashcard(question, answer);
+                String id = data.getStringExtra("id");
+                Flashcard newFlashcard = new Flashcard(id, question, answer, false);
                 flashcardList.add(newFlashcard);
                 adapter.notifyItemInserted(flashcardList.size() - 1);
 
