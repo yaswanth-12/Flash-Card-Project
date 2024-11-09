@@ -13,6 +13,9 @@
         android:theme="@style/Theme.FlashCardProject"
         tools:targetApi="31">
         <activity
+            android:name=".Flashcard_View_Screen"
+            android:exported="false" />
+        <activity
             android:name=".FlashcardAdapter"
             android:exported="false" />
         <activity
