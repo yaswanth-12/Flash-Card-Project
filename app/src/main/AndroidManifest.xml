@@ -16,6 +16,9 @@
             android:name=".Flashcard_View_Screen"
             android:exported="false" />
         <activity
+            android:name=".FlashcardEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".FlashcardAdapter"
             android:exported="false" />
         <activity
@@ -32,7 +35,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

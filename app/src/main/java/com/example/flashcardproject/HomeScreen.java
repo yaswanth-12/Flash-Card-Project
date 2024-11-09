@@ -28,9 +28,6 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
         setContentView(R.layout.activity_home_screen);
 
         flashcardList = new ArrayList<>();
-        // Add some sample flashcards
-        flashcardList.add(new Flashcard("Question 1", "Answer 1"));
-        flashcardList.add(new Flashcard("Question 2", "Answer 2"));
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
