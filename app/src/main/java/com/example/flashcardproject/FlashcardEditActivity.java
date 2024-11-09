@@ -1,4 +1,3 @@
-// FlashcardEditActivity.java
 package com.example.flashcardproject;
 
 import android.content.Intent;
@@ -58,7 +57,7 @@ public class FlashcardEditActivity extends AppCompatActivity {
 
     private void addFlashcardToFirestore(String question, String answer) {
         String id = db.collection("flashcards").document().getId();
-        Flashcard flashcard = new Flashcard(id, question, answer, false);
+        Flashcard flashcard = new Flashcard(id, question, answer);
         db.collection("flashcards")
                 .document(id)
                 .set(flashcard)

@@ -4,13 +4,11 @@ public class Flashcard {
     private String id;
     private String question;
     private String answer;
-    private boolean known;
 
-    public Flashcard(String id, String question, String answer, boolean known) {
+    public Flashcard(String id, String question, String answer) {
         this.id = id;
         this.question = question;
         this.answer = answer;
-        this.known = known;
     }
 
     public String getId() {
@@ -35,13 +33,5 @@ public class Flashcard {
 
     public void setAnswer(String answer) {
         this.answer = answer;
-    }
-
-    public boolean isKnown() {
-        return known;
-    }
-
-    public void setKnown(boolean known) {
-        this.known = known;
     }
 }
