@@ -1,3 +1,4 @@
+// FlashcardEditActivity.java
 package com.example.flashcardproject;
 
 import android.content.Intent;
@@ -46,7 +47,7 @@ public class FlashcardEditActivity extends AppCompatActivity {
         int position = getIntent().getIntExtra("position", -1);
         if (position != -1) {
             resultIntent.putExtra("position", position);
-            updateFlashcardInFirestore(question, answer, position);
+            updateFlashcardInFirestore(question, answer, getIntent().getStringExtra("id"));
         } else {
             addFlashcardToFirestore(question, answer);
         }
@@ -65,16 +66,10 @@ public class FlashcardEditActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(this, "Error adding flashcard", Toast.LENGTH_SHORT).show());
     }
 
-    private void updateFlashcardInFirestore(String question, String answer, int position) {
-        String documentId = getDocumentIdForPosition(position);
-        db.collection("flashcards").document(documentId)
+    private void updateFlashcardInFirestore(String question, String answer, String id) {
+        db.collection("flashcards").document(id)
                 .update("question", question, "answer", answer)
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Flashcard updated", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(this, "Error updating flashcard", Toast.LENGTH_SHORT).show());
-    }
-
-    private String getDocumentIdForPosition(int position) {
-        // Implement this method to return the document ID for the flashcard at the given position
-        return "";
     }
 }
