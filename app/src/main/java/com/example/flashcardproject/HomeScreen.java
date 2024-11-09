@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
 
     private List<Flashcard> flashcardList;
     private FlashcardAdapter adapter;
+    public static final int ADD_FLASHCARD_REQUEST = 1;
+    public static final int EDIT_FLASHCARD_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +39,47 @@ public class HomeScreen extends AppCompatActivity implements FlashcardAdapter.On
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
-            // Handle adding a new flashcard
-            // For example, start a new activity to add a flashcard
+            Intent intent = new Intent(HomeScreen.this, FlashcardEditActivity.class);
+            startActivityForResult(intent, ADD_FLASHCARD_REQUEST);
         });
+
     }
 
     @Override
     public void onEditClick(int position) {
-        // Handle editing the flashcard at position
+        Flashcard flashcard = flashcardList.get(position);
+        Intent intent = new Intent(HomeScreen.this, FlashcardEditActivity.class);
+        intent.putExtra("question", flashcard.getQuestion());
+        intent.putExtra("answer", flashcard.getAnswer());
+        intent.putExtra("position", position);
+        startActivityForResult(intent, EDIT_FLASHCARD_REQUEST);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && data != null) {
+            String question = data.getStringExtra("question");
+            String answer = data.getStringExtra("answer");
+
+            if (requestCode == ADD_FLASHCARD_REQUEST) {
+                Flashcard newFlashcard = new Flashcard(question, answer);
+                flashcardList.add(newFlashcard);
+                adapter.notifyItemInserted(flashcardList.size() - 1);
+
+            } else if (requestCode == EDIT_FLASHCARD_REQUEST) {
+                int position = data.getIntExtra("position", -1);
+
+                if (position != -1) {
+                    flashcardList.get(position).setQuestion(question);
+                    flashcardList.get(position).setAnswer(answer);
+                    adapter.notifyItemChanged(position);
+                }
+            }
+        }
+    }
+
 
     @Override
     public void onDeleteClick(int position) {

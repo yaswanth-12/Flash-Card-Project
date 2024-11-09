@@ -1,5 +1,6 @@
 package com.example.flashcardproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,8 +36,17 @@ public class FlashcardEditActivity extends AppCompatActivity {
             return;
         }
 
-        // Save flashcard details to Firebase (to be implemented later)
-        Toast.makeText(this, "Flashcard saved", Toast.LENGTH_SHORT).show();
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("question", question);
+        resultIntent.putExtra("answer", answer);
+
+        int position = getIntent().getIntExtra("position", -1);
+        if (position != -1) {
+            resultIntent.putExtra("position", position);
+        }
+
+        setResult(RESULT_OK, resultIntent);
         finish();
     }
+
 }
